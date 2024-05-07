@@ -1,0 +1,32 @@
+version: "3"
+services:
+  db:
+    container_name: ghost-referral-server-db
+    image: postgres:13.2
+    restart: always
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    container_name: ghost-referral-server
+    build: .
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: sh -c "npx prisma generate && node index.js"
+
+volumes:
+  postgres_data:
