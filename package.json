@@ -12,7 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.13.0",
+    "@tryghost/admin-api": "^1.13.12",
+    "axios": "^1.6.8",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "prisma": "^5.13.0"
   },
   "devDependencies": {
