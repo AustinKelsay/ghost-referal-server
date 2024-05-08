@@ -1,8 +1,8 @@
 const express = require('express');
-const referralRouter = require('../routers/referralRouter');
-const cronRouter = require('../routers/cronRouter');
-const { errorMiddleware } = require('../middleware/errorMiddleware');
-const { authMiddleware } = require('../middleware/authMiddleware');
+const referralRouter = require('./routers/referralRouter');
+const cronRouter = require('./routers/cronRouter');
+const { errorMiddleware } = require('./middleware/errorMiddleware');
+const { authMiddleware } = require('./middleware/authMiddleware');
 
 const app = express();
 
