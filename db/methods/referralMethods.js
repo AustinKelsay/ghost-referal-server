@@ -79,4 +79,42 @@ const getAllReferees = async () => {
     }
   };
 
-module.exports = { createReferral, getAllReferees };
+  const deleteReferee = async (refereeEmail) => {
+    try {
+        // Find the referee to get the referrer ID before deletion
+        const referee = await prisma.referee.findUnique({
+            where: {
+                email: refereeEmail
+            }
+        });
+
+        if (!referee) {
+            return { error: 'Referee not found' };
+        }
+
+        // Delete the referee
+        await prisma.referee.delete({
+            where: {
+                email: refereeEmail
+            }
+        });
+
+        // Optionally, fetch and return the updated list of referees for the referrer to confirm deletion
+        const updatedReferrer = await prisma.referrer.findUnique({
+            where: {
+                id: referee.referrerId
+            },
+            include: {
+                referees: true
+            }
+        });
+
+        return updatedReferrer;
+    } catch (error) {
+        console.error('Error deleting referee:', error);
+        throw error; // Re-throw the error to be caught in the route handler
+    }
+};
+
+
+module.exports = { createReferral, getAllReferees, deleteReferee };

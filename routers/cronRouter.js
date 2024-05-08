@@ -11,7 +11,6 @@ router.get('/', async (req, res) => {
 
     try {
         const referees = await getAllReferees();
-
         console.log('Referees:', referees);
 
         const response = await axios.get(`${GHOST_API}/members/`, {
@@ -38,14 +37,21 @@ router.get('/', async (req, res) => {
             }
 
             // Send emails with links to the eligible referees and their referrers
-            const emailPromises = eligibleReferees.map(referee => sendRewardEmail(referee.email, referee.referrer.email));
+            const emailPromises = eligibleReferees.map(referee =>
+                sendRewardEmail(referee.email, referee.referrer.email)
+                    .then(() => deleteReferee(referee.email)) // Delete referee after successful email
+                    .catch(error => {
+                        console.error('Error sending email or deleting referee:', referee.email, error);
+                        throw new Error(`Failed to send email or delete referee: ${referee.email}`);
+                    })
+            );
 
             try {
                 await Promise.all(emailPromises);
-                return res.status(200).json({ message: 'Emails sent successfully', referees: eligibleReferees });
+                return res.status(200).json({ message: 'Emails sent and referees deleted successfully', referees: eligibleReferees });
             } catch (error) {
-                console.error('Error sending emails:', error.message);
-                return res.status(500).json({ error: 'Failed to send emails' });
+                console.error('Error processing emails or deletions:', error);
+                return res.status(500).json({ error: 'Failed to send emails or delete referees' });
             }
         } else {
             return res.status(404).json({ message: 'No members found' });
