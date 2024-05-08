@@ -3,9 +3,10 @@ const axios = require('axios');
 const { createGhostJWT } = require('../utils/jwt');
 const { createReferral } = require('../db/methods/referralMethods');
 const { fetchMemberByEmail } = require('../scripts/ghost/fetchMemberByEmail');
+const { authMiddleware } = require('../middleware/authMiddleware');
 const GHOST_API = process.env.GHOST_API;
 
-router.post('/', async (req, res, next) => {
+router.post('/', authMiddleware, async (req, res, next) => {
   try {
     const { referrerName, referrerEmail, refereeEmail } = req.body;
     const token = await createGhostJWT();

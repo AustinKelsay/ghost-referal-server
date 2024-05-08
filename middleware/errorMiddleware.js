@@ -1,5 +1,5 @@
 // Error handling middleware
-function errorHandler(err, req, res, next) {
+function errorMiddleware(err, req, res, next) {
     console.error('Error:', err.message, err.stack, {
         requestData: req.body,
         responseData: err.response?.data,
@@ -11,4 +11,4 @@ function errorHandler(err, req, res, next) {
     });
 }
 
-module.exports = { errorHandler };
+module.exports = { errorMiddleware };
