@@ -26,28 +26,30 @@ router.post('/', async (req, res) => {
         } else {
             axios.post(`${GHOST_API}/members/`, {
                 members: [{
-                    email: refereeEmail
+                  email: refereeEmail
                 }]
-            }, {
+              }, {
                 headers: {
-                    'Authorization': `Ghost ${token}`,
-                    'Content-Type': 'application/json',
-                    'Accept-Version': 'v5.82'
+                  'Authorization': `Ghost ${token}`,
+                  'Content-Type': 'application/json',
+                  'Accept-Version': 'v5.82'
                 }
-            }).then(response => {
+              }).then(response => {
                 console.log('Response for createmember:', response.data);
-
-                createReferral(referrerName, referrerEmail, refereeEmail).then(referral => {
-                    if (!referral) {
-                        res.status(500).send('Error creating referral');
+                createReferral(referrerName, referrerEmail, refereeEmail)
+                  .then(referral => {
+                    if (referral.error) {
+                      res.status(400).send(referral.error);
                     } else {
-                        res.status(200).send(referral);
+                      res.status(200).send(referral);
                     }
-                });
-            }
-            ).catch(error => {
+                  })
+                  .catch(error => {
+                    res.status(500).send('Error creating referral');
+                  });
+              }).catch(error => {
                 console.error('Error creating referee:', Object.keys(error), error?.message, error?.name, error?.response?.data);
-            });
+              });
         }
     }).catch(error => {
         console.error('Error fetching members:', Object.keys(error), error?.message, error?.name, error.response?.data);
