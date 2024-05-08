@@ -1,6 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma = require('../prisma.js');
 
 const createReferral = async (referrerName, referrerEmail, refereeEmail) => {
     try {
