@@ -9,6 +9,11 @@ router.get('/', async (req, res, next) => {
   try {
     const token = await createGhostJWT();
     const referees = await getAllReferees();
+
+    if (referees.length === 0) {
+      return res.status(404).json({ message: 'No referees found' });
+    }
+    
     console.log('Referees:', referees);
 
     const response = await axios.get(`${GHOST_API}/members/`, {
