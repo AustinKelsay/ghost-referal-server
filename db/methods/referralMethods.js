@@ -53,4 +53,13 @@ const createReferral = async (referrerName, referrerEmail, refereeEmail) => {
     }
 }
 
-module.exports = { createReferral };
+const getAllReferees = async () => {
+    try {
+        const referees = await prisma.referee.findMany();
+        return referees;
+    } catch (error) {
+        console.error('Error fetching referees:', error);
+    }
+}
+
+module.exports = { createReferral, getAllReferees };

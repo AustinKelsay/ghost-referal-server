@@ -1,5 +1,6 @@
 const express = require('express');
 const referralRouter = require('./routers/referralRouter');
+const cronRouter = require('./routers/cronRouter');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +12,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/referral', referralRouter);
+app.use('/cron', cronRouter);
 
 // Start the server
 app.listen(PORT, () => {

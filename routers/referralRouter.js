@@ -4,7 +4,6 @@ const { createGhostJWT } = require('../utils/jwt');
 const {createReferral} = require('../db/methods/referralMethods');
 
 const GHOST_API = process.env.GHOST_API;
-const GHOST_API_KEY = process.env.GHOST_API_KEY;
 
 router.post('/', async (req, res) => {
     const { referrerName, referrerEmail, refereeEmail } = req.body;
