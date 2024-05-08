@@ -2,7 +2,7 @@ const router = require("express").Router();
 const axios = require('axios');
 const { createGhostJWT } = require('../utils/jwt');
 const { getAllReferees } = require('../db/methods/referralMethods');
-const { sendEmail } = require('../scripts/ghost/sendEmail');
+const { sendRewardEmail } = require('../scripts/ghost/sendRewardEmail');
 
 const GHOST_API = process.env.GHOST_API;
 
@@ -38,7 +38,7 @@ router.get('/', async (req, res) => {
             }
 
             // Send emails with links to the eligible referees and their referrers
-            const emailPromises = eligibleReferees.map(referee => sendEmail(referee.email, referee.referrer.email));
+            const emailPromises = eligibleReferees.map(referee => sendRewardEmail(referee.email, referee.referrer.email));
 
             try {
                 await Promise.all(emailPromises);
@@ -59,7 +59,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     const { referrerName, referrerEmail, refereeEmail } = req.body;
 
-    const emailResponse = await sendEmail(refereeEmail, referrerEmail);
+    const emailResponse = await sendRewardEmail(refereeEmail, referrerEmail);
 
     console.log('Email response on endpoint:', emailResponse);
 

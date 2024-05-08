@@ -4,7 +4,7 @@ const axios = require('axios');
 
 const GHOST_API = process.env.GHOST_API;
 
-const sendEmail = async (email, referrerEmail) => {
+const sendRewardEmail = async (email, referrerEmail) => {
     const token = await createGhostJWT();
     const refereeLink = await fetchRewardLink();
   
@@ -99,4 +99,4 @@ const sendEmail = async (email, referrerEmail) => {
     }
   };
 
-module.exports = { sendEmail };
+module.exports = { sendRewardEmail };
