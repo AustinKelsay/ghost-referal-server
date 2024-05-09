@@ -2,9 +2,11 @@ const express = require('express');
 const referralRouter = require('./routers/referralRouter');
 const cronRouter = require('./routers/cronRouter');
 const { errorMiddleware } = require('./middleware/errorMiddleware');
+const cors = require('cors');
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
