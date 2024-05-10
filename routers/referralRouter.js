@@ -40,7 +40,7 @@ router.post('/', async (req, res, next) => {
           error.statusCode = 400;
           throw error;
         } else {
-            await sendReferredEmail(refereeEmail, referrerName);
+            // await sendReferredEmail(refereeEmail, referrerName);
           return res.status(200).send(referral);
         }
       } catch (error) {
