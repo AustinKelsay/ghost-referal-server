@@ -1,5 +1,6 @@
 const { createGhostJWT } = require('../../utils/jwt');
 const { fetchRewardLink } = require('../fetchRewardLink');
+const { getNewsletterSlug } = require('./getNewsletterSlug');
 const axios = require('axios');
 
 const GHOST_API = process.env.GHOST_API;
@@ -8,8 +9,9 @@ const sendRewardEmail = async (email, referrerEmail) => {
   const token = await createGhostJWT();
   const refereeLink = await fetchRewardLink();
 
-  console.log('refereeLink:', refereeLink);
-  console.log('Attempting to send test email to:', email);
+  const newsletterSlug = await getNewsletterSlug();
+
+  console.log('newsletterSlug:', newsletterSlug);
 
   try {
     // Create a draft post for the test email
@@ -34,7 +36,7 @@ const sendRewardEmail = async (email, referrerEmail) => {
     const updatedAt = createPostResponse.data.posts[0].updated_at;
 
     // Publish the post to trigger email sending
-    const refereeEmailResponse = await axios.put(`${GHOST_API}/posts/${postId}/?newsletter=663e85e39e25b700018a9dbf&email_segment=email:'${email}'`, {      posts: [
+    const refereeEmailResponse = await axios.put(`${GHOST_API}/posts/${postId}/?newsletter=${newsletterSlug}&email_segment=email:'${email}'`, {      posts: [
         {
           status: 'published',
           updated_at: updatedAt,
@@ -76,7 +78,7 @@ const sendRewardEmail = async (email, referrerEmail) => {
       const referrerUpdatedAt = createReferrerPostResponse.data.posts[0].updated_at;
 
       // Publish the referrer post to trigger email sending
-      await axios.put(`${GHOST_API}/posts/${referrerPostId}/?newsletter=663e85e39e25b700018a9dbf&email_segment=email:'${referrerEmail}'`, {        posts: [
+      await axios.put(`${GHOST_API}/posts/${referrerPostId}/?newsletter=${newsletterSlug}&email_segment=email:'${referrerEmail}'`, {        posts: [
           {
             status: 'published',
             updated_at: referrerUpdatedAt,
