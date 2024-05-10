@@ -75,4 +75,21 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+router.post('/', async (req, res, next) => {
+    try {
+      const { referrerName, referrerEmail, refereeEmail } = req.body;
+      const emailResponse = await sendRewardEmail(refereeEmail, referrerEmail);
+      console.log('Email response on endpoint:', emailResponse);
+      if (emailResponse.error) {
+        const error = new Error('Error sending email');
+        error.statusCode = 500;
+        throw error;
+      } else {
+        return res.status(200).send(emailResponse);
+      }
+    } catch (error) {
+      return next(error);
+    }
+  });
+
 module.exports = router;
