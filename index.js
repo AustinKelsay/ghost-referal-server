@@ -21,7 +21,6 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP, please try again later',
 });
 
-// Apply rate limiter to all routes
 app.use(limiter);
 
 app.use(express.json());
