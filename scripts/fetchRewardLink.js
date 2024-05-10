@@ -4,6 +4,7 @@ const BITCOIN_LINK_API = process.env.BITCOIN_LINK_API;
 const BITCOIN_LINK_SECRET = process.env.BITCOIN_LINK_SECRET;
 
 const fetchRewardLink = async () => {
+    console.log('Attempting to fetch reward link with secret:', BITCOIN_LINK_SECRET, 'and API:', BITCOIN_LINK_API);
   try {
     const response = await axios.get(`${BITCOIN_LINK_API}/reward-link`, {
       headers: {
@@ -11,6 +12,8 @@ const fetchRewardLink = async () => {
         'Content-Type': 'application/json',
       },
     });
+
+    console.log('Response from fetchRewardLink:', response.data);
 
     if (response.status === 200) {
       return response.data;
