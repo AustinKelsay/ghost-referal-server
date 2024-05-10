@@ -29,7 +29,7 @@ router.get('/', async (req, res, next) => {
       console.log('Members:', members);
 
       const eligibleReferees = members.filter(member =>
-        referees.some(referee => referee.email === member.email && member.email_opened_count === 3)
+        referees.some(referee => referee.email === member.email && member.email_opened_count === 2 && member.email === "austinkelsay11@gmail.com")
       );
       console.log('eligibleReferees:', eligibleReferees);
 
@@ -65,21 +65,21 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.post('/', async (req, res, next) => {
-  try {
-    const { referrerName, referrerEmail, refereeEmail } = req.body;
-    const emailResponse = await sendRewardEmail(refereeEmail, referrerEmail);
-    console.log('Email response on endpoint:', emailResponse);
-    if (emailResponse.error) {
-      const error = new Error('Error sending email');
-      error.statusCode = 500;
-      throw error;
-    } else {
-      return res.status(200).send(emailResponse);
-    }
-  } catch (error) {
-    return next(error);
-  }
-});
+// router.post('/', async (req, res, next) => {
+//   try {
+//     const { referrerName, referrerEmail, refereeEmail } = req.body;
+//     const emailResponse = await sendRewardEmail(refereeEmail, referrerEmail);
+//     console.log('Email response on endpoint:', emailResponse);
+//     if (emailResponse.error) {
+//       const error = new Error('Error sending email');
+//       error.statusCode = 500;
+//       throw error;
+//     } else {
+//       return res.status(200).send(emailResponse);
+//     }
+//   } catch (error) {
+//     return next(error);
+//   }
+// });
 
 module.exports = router;

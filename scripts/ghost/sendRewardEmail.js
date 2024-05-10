@@ -94,9 +94,9 @@ const sendRewardEmail = async (email, referrerEmail) => {
         console.log('Referrer email sent successfully');
       }
   
-      return { message: 'Test email sent successfully' };
+      return { message: 'Test reward email sent successfully' };
     } catch (error) {
-      console.error('Error sending test email:', error.message, error.response?.data);
+      console.error('Error sending test reward email:', error.message, error.response?.data);
       throw new Error('Failed to send test email');
     }
   };

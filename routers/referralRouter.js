@@ -3,6 +3,7 @@ const axios = require('axios');
 const { createGhostJWT } = require('../utils/jwt');
 const { createReferral } = require('../db/methods/referralMethods');
 const { fetchMemberByEmail } = require('../scripts/ghost/fetchMemberByEmail');
+const {sendReferredEmail} = require('../scripts/ghost/sendReferredEmail');
 const GHOST_API = process.env.GHOST_API;
 
 router.post('/', async (req, res, next) => {
@@ -39,6 +40,7 @@ router.post('/', async (req, res, next) => {
           error.statusCode = 400;
           throw error;
         } else {
+            await sendReferredEmail(refereeEmail, referrerName);
           return res.status(200).send(referral);
         }
       } catch (error) {

@@ -1,14 +1,10 @@
 const { createGhostJWT } = require('../../utils/jwt');
-const { fetchRewardLink } = require('../fetchRewardLink');
 const axios = require('axios');
 
 const GHOST_API = process.env.GHOST_API;
 
 const sendReferredEmail = async (email, name) => {
     const token = await createGhostJWT();
-    const refereeLink = await fetchRewardLink();
-  
-    console.log('Attempting to send test email to:', email);
   
     try {
       // Create a draft post for the test email
@@ -49,11 +45,11 @@ const sendReferredEmail = async (email, name) => {
       });
   
       if (emailResponse.data.posts[0].status === 'published') {
-        console.log('Test email sent successfully:', email);
+        console.log('Test refferred email sent successfully:', email);
         return emailResponse.data;
       }
     } catch (error) {
-      console.error('Error sending test email:', error.message, error.response?.data);
+      console.error('Error sending referred test email:', error.message, error.response?.data);
       throw new Error('Failed to send test email');
     }
   };
