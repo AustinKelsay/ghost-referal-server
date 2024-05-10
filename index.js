@@ -32,7 +32,6 @@ app.get('/', (req, res) => {
 app.use('/referral', referralRouter);
 app.use('/cron', cronRouter);
 
-// Error handling middleware
 app.use(errorMiddleware);
 
 module.exports = app;
