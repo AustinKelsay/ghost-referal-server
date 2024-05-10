@@ -75,34 +75,21 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// router.post('/', async (req, res, next) => {
-//     const token = await createGhostJWT();
-//     axios.get("https://tftc.io/ghost/api/admin/posts/663e7c4d9e25b700018a8a1d", {
-//         headers: {
-//             'Authorization': `Ghost ${token}`,
-//             'Content-Type': 'application/json',
-//             'Accept-Version': 'v5.82'
-//         }
-//         }).then((response) => {
-//         console.log('response:', response.data);
-//         res.status(200).send(response.data);
-//         }).catch((error) => {
-//         console.error('error:', error);
-//         });
-//     try {
-//       const { referrerName, referrerEmail, refereeEmail } = req.body;
-//       const emailResponse = await sendRewardEmail(refereeEmail, referrerEmail);
-//       console.log('Email response on endpoint:', emailResponse);
-//       if (emailResponse.error) {
-//         const error = new Error('Error sending email');
-//         error.statusCode = 500;
-//         throw error;
-//       } else {
-//         return res.status(200).send(emailResponse);
-//       }
-//     } catch (error) {
-//       return next(error);
-//     }
-//   });
+router.post('/', async (req, res, next) => {
+    try {
+      const { referrerName, referrerEmail, refereeEmail } = req.body;
+      const emailResponse = await sendRewardEmail(refereeEmail, referrerEmail);
+      console.log('Email response on endpoint:', emailResponse);
+      if (emailResponse.error) {
+        const error = new Error('Error sending email');
+        error.statusCode = 500;
+        throw error;
+      } else {
+        return res.status(200).send(emailResponse);
+      }
+    } catch (error) {
+      return next(error);
+    }
+  });
 
 module.exports = router;
