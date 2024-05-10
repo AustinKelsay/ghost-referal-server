@@ -18,7 +18,6 @@ if (process.env.NODE_ENV === 'production') {
     }
     // ...and assign it to the prisma variable. This ensures that in development,
     // the same instance of PrismaClient is reused across hot reloads and server restarts,
-    // which can help prevent the exhaustion of database connections during development.
     prisma = global.prisma;
 }
 
