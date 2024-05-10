@@ -26,7 +26,6 @@ router.get('/', async (req, res, next) => {
 
     if (response.data?.members && response.data?.members.length > 0) {
       const members = response.data.members;
-      console.log('Members:', members);
 
       const eligibleReferees = members.filter(member =>
         referees.some(referee => referee.email === member.email && member.email_opened_count === 1 && member.email === "austinkelsay11@gmail.com")
