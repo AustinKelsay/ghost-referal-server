@@ -29,6 +29,8 @@ router.get('/', async (req, res, next) => {
                     'Accept-Version': 'v5.82'
                 }
             });
+
+            console.log('Response for fetch member by referee email:', response.data);
             
             if (response.data?.members && response.data?.members.length > 0) {
                 const member = response.data.members[0];
@@ -41,7 +43,7 @@ router.get('/', async (req, res, next) => {
             console.warn('Error fetching member:', referee.email, error.message, error.response?.data);
         }
     }
-    
+
     console.log('eligibleReferees:', eligibleReferees);
 
     if (eligibleReferees.length === 0) {
