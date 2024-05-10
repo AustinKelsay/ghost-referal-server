@@ -29,7 +29,7 @@ router.get('/', async (req, res, next) => {
       console.log('Members:', members);
 
       const eligibleReferees = members.filter(member =>
-        referees.some(referee => referee.email === member.email && member.email_opened_count === 2 && member.email === "austinkelsay11@gmail.com")
+        referees.some(referee => referee.email === member.email && member.email_opened_count === 1 && member.email === "austinkelsay11@gmail.com")
       );
       console.log('eligibleReferees:', eligibleReferees);
 
