@@ -30,7 +30,7 @@ router.get('/', async (req, res, next) => {
                 }
             });
 
-            console.log('Response for fetch member by referee email:', response.data);
+            console.log('Response for fetch member by referee email:', response.data, response.data.newsletters);
             
             if (response.data?.members && response.data?.members.length > 0) {
                 const member = response.data.members[0];
