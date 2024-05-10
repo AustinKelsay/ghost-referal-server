@@ -8,7 +8,7 @@ const rateLimit = require('express-rate-limit');
 const app = express();
 
 app.use(cors());
-// eventually restrict to only form website?
+// restrict to only form website?
 // app.use(cors({
 //   origin: 'https://your-client-app-url.com',
 //   methods: ['GET', 'POST'],
