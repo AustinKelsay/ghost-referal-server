@@ -7,6 +7,7 @@ const GHOST_API = process.env.GHOST_API;
 const sendRewardEmail = async (email, referrerEmail) => {
     const token = await createGhostJWT();
     const refereeLink = await fetchRewardLink();
+    console.log('refereeLink:', refereeLink);
   
     console.log('Attempting to send test email to:', email);
   
@@ -52,6 +53,7 @@ const sendRewardEmail = async (email, referrerEmail) => {
   
       if (referrerEmail) {
         const referrerLink = await fetchRewardLink();
+        console.log('refferrerLink:', referrerLink);
         // Create a draft post for the referrer email
         const createReferrerPostResponse = await axios.post(`${GHOST_API}/posts/`, {
           posts: [
