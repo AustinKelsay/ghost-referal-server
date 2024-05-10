@@ -34,8 +34,7 @@ const sendRewardEmail = async (email, referrerEmail) => {
     const updatedAt = createPostResponse.data.posts[0].updated_at;
 
     // Publish the post to trigger email sending
-    const refereeEmailResponse = await axios.put(`${GHOST_API}/posts/${postId}/?newsletter=663e85e39e25b700018a9dbf&email_segment=email:"${email}"`, {
-      posts: [
+    const refereeEmailResponse = await axios.put(`${GHOST_API}/posts/${postId}/?newsletter=663e85e39e25b700018a9dbf&email_segment=email:'${email}'`, {      posts: [
         {
           status: 'published',
           updated_at: updatedAt,
@@ -77,8 +76,7 @@ const sendRewardEmail = async (email, referrerEmail) => {
       const referrerUpdatedAt = createReferrerPostResponse.data.posts[0].updated_at;
 
       // Publish the referrer post to trigger email sending
-      await axios.put(`${GHOST_API}/posts/${referrerPostId}/?newsletter=663e85e39e25b700018a9dbf&email_segment=email:"${referrerEmail}"`, {
-        posts: [
+      await axios.put(`${GHOST_API}/posts/${referrerPostId}/?newsletter=663e85e39e25b700018a9dbf&email_segment=email:'${referrerEmail}'`, {        posts: [
           {
             status: 'published',
             updated_at: referrerUpdatedAt,
