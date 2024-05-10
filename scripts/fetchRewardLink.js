@@ -5,7 +5,7 @@ const BITCOIN_LINK_SECRET = process.env.BITCOIN_LINK_SECRET;
 
 const fetchRewardLink = async () => {
   try {
-    const response = await axios.get(`${BITCOIN_LINK_API}/reward-link`, {
+    const response = await axios.get(`${BITCOIN_LINK_API}`, {
       headers: {
         'Authorization': BITCOIN_LINK_SECRET,
         'Content-Type': 'application/json',
