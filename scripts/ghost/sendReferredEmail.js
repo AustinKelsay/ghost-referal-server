@@ -1,10 +1,13 @@
 const { createGhostJWT } = require('../../utils/jwt');
+const { getNewsletterSlug } = require('./getNewsletterSlug');
 const axios = require('axios');
 
 const GHOST_API = process.env.GHOST_API;
 
 const sendReferredEmail = async (email, name) => {
   const token = await createGhostJWT();
+
+  const newsletterSlug = await getNewsletterSlug();
 
   try {
     // Create a draft post for the test email
@@ -29,7 +32,7 @@ const sendReferredEmail = async (email, name) => {
     const updatedAt = createPostResponse.data.posts[0].updated_at;
 
     // Publish the post to trigger email sending to a single email address
-    const emailResponse = await axios.put(`${GHOST_API}/posts/${postId}/?newsletter=663e85e39e25b700018a9dbf&email_segment=email:"${email}"`, {
+    const emailResponse = await axios.put(`${GHOST_API}/posts/${postId}/?newsletter=${newsletterSlug}&email_segment=email:'${email}'`, {
       posts: [
         {
           status: 'published',

@@ -17,6 +17,8 @@ const getNewsletterSlug = async () => {
 
     const newsletters = response.data.newsletters;
 
+    console.log('Newsletters:', newsletters);
+
     // Find the desired newsletter by name or other criteria
     const desiredNewsletter = newsletters.find(newsletter => newsletter.name === 'Test-Email-Newsletter');
 

@@ -11,8 +11,6 @@ const sendRewardEmail = async (email, referrerEmail) => {
 
   const newsletterSlug = await getNewsletterSlug();
 
-  console.log('newsletterSlug:', newsletterSlug);
-
   try {
     // Create a draft post for the test email
     const createPostResponse = await axios.post(`${GHOST_API}/posts/`, {
@@ -54,7 +52,6 @@ const sendRewardEmail = async (email, referrerEmail) => {
 
     if (referrerEmail) {
       const referrerLink = await fetchRewardLink();
-      console.log('referrerLink:', referrerLink);
 
       // Create a draft post for the referrer email
       const createReferrerPostResponse = await axios.post(`${GHOST_API}/posts/`, {
@@ -78,7 +75,7 @@ const sendRewardEmail = async (email, referrerEmail) => {
       const referrerUpdatedAt = createReferrerPostResponse.data.posts[0].updated_at;
 
       // Publish the referrer post to trigger email sending
-      await axios.put(`${GHOST_API}/posts/${referrerPostId}/?newsletter=${newsletterSlug}&email_segment=email:'${referrerEmail}'`, {        posts: [
+      const updateReferrerPostResponse = await axios.put(`${GHOST_API}/posts/${referrerPostId}/?newsletter=${newsletterSlug}&email_segment=email:'${referrerEmail}'`, {        posts: [
           {
             status: 'published',
             updated_at: referrerUpdatedAt,
@@ -92,7 +89,7 @@ const sendRewardEmail = async (email, referrerEmail) => {
         },
       });
 
-      console.log('Referrer email sent successfully');
+      console.log('updateReferrerPostResponse:', updateReferrerPostResponse.data);
     }
 
     return { message: 'Test reward email sent successfully' };
