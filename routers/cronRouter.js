@@ -3,6 +3,7 @@ const axios = require('axios');
 const { createGhostJWT } = require('../utils/jwt');
 const { getAllReferees, deleteReferee } = require('../db/methods/referralMethods');
 const { sendRewardEmail } = require('../scripts/ghost/sendRewardEmail');
+const {sendReferredEmail} = require('../scripts/ghost/sendReferredEmail');
 
 const GHOST_API = process.env.GHOST_API;
 
@@ -75,21 +76,20 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// router.post('/', async (req, res, next) => {
-//     try {
-//       const { referrerName, referrerEmail, refereeEmail } = req.body;
-//       const emailResponse = await sendRewardEmail(refereeEmail, referrerEmail);
-//       console.log('Email response on endpoint:', emailResponse);
-//       if (emailResponse.error) {
-//         const error = new Error('Error sending email');
-//         error.statusCode = 500;
-//         throw error;
-//       } else {
-//         return res.status(200).send(emailResponse);
-//       }
-//     } catch (error) {
-//       return next(error);
-//     }
-//   });
+router.post('/', async (req, res, next) => {
+    try {
+      const { referrerName, referrerEmail, refereeEmail } = req.body;
+      const emailResponse = await sendReferredEmail(refereeEmail, referrerName);
+      if (emailResponse) {
+        return res.status(200).send(emailResponse);
+      }
+    } catch (error) {
+      console.error('Error sending referred email:', error.message, error.stack, {
+        requestData: req.body,
+        responseData: error.response?.data,
+      });
+      return next(error);
+    }
+  });
 
 module.exports = router;
