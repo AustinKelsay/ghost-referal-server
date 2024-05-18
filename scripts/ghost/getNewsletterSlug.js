@@ -2,6 +2,7 @@ const { createGhostJWT } = require('../../utils/jwt');
 const axios = require('axios');
 
 const GHOST_API = process.env.GHOST_API;
+const NEWSLETTER_NAME = "Marty's Bent";
 
 const getNewsletterSlug = async () => {
   const token = await createGhostJWT();
@@ -20,7 +21,7 @@ const getNewsletterSlug = async () => {
     console.log('Newsletters:', newsletters);
 
     // Find the desired newsletter by name or other criteria
-    const desiredNewsletter = newsletters.find(newsletter => newsletter.name === 'Test-Email-Newsletter');
+    const desiredNewsletter = newsletters.find(newsletter => newsletter.name === NEWSLETTER_NAME);
 
     if (desiredNewsletter) {
       return desiredNewsletter.slug;
