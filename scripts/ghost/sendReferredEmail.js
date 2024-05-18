@@ -15,7 +15,7 @@ const sendReferredEmail = async (email, name) => {
       posts: [
         {
           title: 'Test Email',
-          lexical: `{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"TEST REFERRAL EMAIL: \nYou've been Referred to TFTC by ${name}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}`,
+          lexical: `{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"You've been Referred to TFTC by ${name}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}`,
           status: 'draft',
           email_only: true,
         },

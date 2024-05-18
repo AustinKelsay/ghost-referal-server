@@ -17,7 +17,7 @@ const sendRewardEmail = async (email, referrerEmail) => {
       posts: [
         {
           title: 'Test Email',
-          lexical: `{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"TEST REFERRAL REWARD EMAIL: \nClaim your reward here: ${refereeLink}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}`,
+          lexical: `{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"This is a test email. Claim your reward here: ${refereeLink}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}`,
           status: 'draft',
           email_only: true,
         },
@@ -58,7 +58,7 @@ const sendRewardEmail = async (email, referrerEmail) => {
         posts: [
           {
             title: 'Referral Email',
-            lexical: `{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"TEST REFERRAL REWARD EMAIL: \nYour referee has been sent their reward. Claim your reward here: ${referrerLink}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}`,
+            lexical: `{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Your referee has claimed their reward. Claim your reward here: ${referrerLink}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}`,
             status: 'draft',
             email_only: true,
           },
