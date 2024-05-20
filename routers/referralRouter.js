@@ -10,8 +10,20 @@ router.post('/', async (req, res, next) => {
   try {
     const { referrerName, referrerEmail, refereeEmail } = req.body;
     const token = await createGhostJWT();
+
     const refereeStatus = await fetchMemberByEmail(refereeEmail, token);
     const referrerStatus = await fetchMemberByEmail(referrerEmail, token);
+
+    // Check if the referrer already exists in the database
+    const existingReferrer = await prisma.referrer.findUnique({
+      where: { email: referrerEmail },
+    });
+
+    if (existingReferrer) {
+      const error = new Error('Referrer has already made a referral.');
+      error.statusCode = 400;
+      throw error;
+    }
 
     if (refereeStatus.status === 'found' && referrerStatus.status === 'found') {
       const error = new Error('Both referee and referrer are already members.');
@@ -40,7 +52,7 @@ router.post('/', async (req, res, next) => {
           error.statusCode = 400;
           throw error;
         } else {
-            await sendReferredEmail(refereeEmail, referrerName);
+          await sendReferredEmail(refereeEmail, referrerName);
           return res.status(200).send(referral);
         }
       } catch (error) {
