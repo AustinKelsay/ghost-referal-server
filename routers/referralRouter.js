@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const axios = require('axios');
+const prisma = require('../db/prisma');
 const { createGhostJWT } = require('../utils/jwt');
 const { createReferral } = require('../db/methods/referralMethods');
 const { fetchMemberByEmail } = require('../scripts/ghost/fetchMemberByEmail');
