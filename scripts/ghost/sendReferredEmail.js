@@ -4,7 +4,7 @@ const axios = require('axios');
 
 const GHOST_API = process.env.GHOST_API;
 
-const sendReferredEmail = async (email, name) => {
+const sendReferredEmail = async (email, name, referrerEmail) => {
   const token = await createGhostJWT();
 
   const newsletterSlug = await getNewsletterSlug();
@@ -14,8 +14,20 @@ const sendReferredEmail = async (email, name) => {
     const createPostResponse = await axios.post(`${GHOST_API}/posts/`, {
       posts: [
         {
-          title: 'Test Email',
-          lexical: `{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"You've been Referred to TFTC by ${name}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}`,
+          title: "You've been invited to the TFTC community",
+          lexical: `{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Hey there! You have been invited to the TFTC (Truth for the Commoner) community by ${referrerEmail}. ${name} believes that you would get value out of the content we produce here at TFTC.
+
+          If you accept the invitation to the TFTC community you will be automatically enrolled in our referral program and will receive a link redeemable for some bitcoin after reading three newsletters. 
+          
+          Our hope is that we prove to you that we are a valuable source of information after reading three of our newsletters, that you continue reading, and feel compelled to tell others about what we’re up to at TFTC.
+          
+          We look forward to earning your attention and hope that our offer of some bitcoin after reading a few newsletters is a step toward building trust between yourself and TFTC.
+          
+          Best,
+          
+          Marty
+          
+          Founder of TFTC","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}`,
           status: 'draft',
           email_only: true,
         },
