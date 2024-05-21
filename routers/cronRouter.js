@@ -3,7 +3,7 @@ const axios = require('axios');
 const { createGhostJWT } = require('../utils/jwt');
 const { getAllReferees, deleteReferee } = require('../db/methods/referralMethods');
 const { sendRewardEmail } = require('../scripts/ghost/sendRewardEmail');
-const {sendReferredEmail} = require('../scripts/ghost/sendReferredEmail');
+const { sendReferredEmail } = require('../scripts/ghost/sendReferredEmail');
 
 const GHOST_API = process.env.GHOST_API;
 
@@ -22,8 +22,13 @@ router.get('/', async (req, res, next) => {
 
     for (const referee of referees) {
         try {
+          // Quick fix for error uriEncoding email with a + in it
+            let email = referee.email;
+            if (email.includes('+')) {
+                email = email.replace(/\+/g, '%2B');
+            }
 
-            const response = await axios.get(`${GHOST_API}/members/?filter=email:${encodeURIComponent(referee.email)}`, {
+            const response = await axios.get(`${GHOST_API}/members/?filter=email:'${encodeURIComponent(email)}'`, {
                 headers: {
                     'Authorization': `Ghost ${token}`,
                     'Content-Type': 'application/json',
