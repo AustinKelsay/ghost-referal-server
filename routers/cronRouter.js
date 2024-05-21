@@ -30,8 +30,6 @@ router.get('/', async (req, res, next) => {
                     'Accept-Version': 'v5.82'
                 }
             });
-
-            console.log('Response for fetch member by referee email:', response.data, response.data.newsletters);
             
             if (response.data?.members && response.data?.members.length > 0) {
                 const member = response.data.members[0];
