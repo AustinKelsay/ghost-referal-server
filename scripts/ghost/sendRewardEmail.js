@@ -13,7 +13,6 @@ const sendRewardEmail = async (email, referrerEmail) => {
 
   try {
     // Create a draft post for the test email
-    // Create a draft post for the test email
 const createPostResponse = await axios.post(`${GHOST_API}/posts/`, {
   posts: [
     {
