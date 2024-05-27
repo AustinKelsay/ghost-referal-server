@@ -46,7 +46,7 @@ const createPostResponse = await axios.post(`${GHOST_API}/posts/`, {
           "version": 1
         }
       }),
-      status: 'scheduled',
+      status: 'draft',
       email_only: true,
       // visibility: 'none',
     },
@@ -65,7 +65,7 @@ const createPostResponse = await axios.post(`${GHOST_API}/posts/`, {
     // Publish the post to trigger email sending
     const refereeEmailResponse = await axios.put(`${GHOST_API}/posts/${postId}/?newsletter=${newsletterSlug}&email_segment=email:'${email}'`, {      posts: [
         {
-          status: 'sent',
+          status: 'published',
           updated_at: updatedAt,
         },
       ],
@@ -117,7 +117,7 @@ const createReferrerPostResponse = await axios.post(`${GHOST_API}/posts/`, {
           "version": 1
         }
       }),
-      status: 'scheduled',
+      status: 'draft',
       email_only: true,
       visibility: 'none',
     },
@@ -136,7 +136,7 @@ const createReferrerPostResponse = await axios.post(`${GHOST_API}/posts/`, {
       // Publish the referrer post to trigger email sending
       const updateReferrerPostResponse = await axios.put(`${GHOST_API}/posts/${referrerPostId}/?newsletter=${newsletterSlug}&email_segment=email:'${referrerEmail}'`, {        posts: [
           {
-            status: 'sent',
+            status: 'published',
             updated_at: referrerUpdatedAt,
           },
         ],
