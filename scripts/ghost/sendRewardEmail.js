@@ -48,7 +48,7 @@ const createPostResponse = await axios.post(`${GHOST_API}/posts/`, {
       }),
       status: 'draft',
       email_only: true,
-      visibility: 'none',
+      // visibility: 'none',
     },
   ],
 }, {
@@ -119,7 +119,7 @@ const createReferrerPostResponse = await axios.post(`${GHOST_API}/posts/`, {
       }),
       status: 'draft',
       email_only: true,
-      visibility: 'none',
+      // visibility: 'none',
     },
   ],
 }, {
