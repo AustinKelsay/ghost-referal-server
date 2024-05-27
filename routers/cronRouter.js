@@ -12,8 +12,6 @@ router.get('/', async (req, res, next) => {
     const token = await createGhostJWT();
     const referees = await getAllReferees();
 
-    console.log('Referees:', referees);
-
     if (!referees || referees?.length === 0) {
       return res.status(404).json({ message: 'No referees found' });
     }
@@ -79,20 +77,17 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// router.post('/', async (req, res, next) => {
-//     try {
-//       const { referrerName, referrerEmail, refereeEmail } = req.body;
-//       const emailResponse = await sendReferredEmail(refereeEmail, referrerName, referrerEmail);
-//       if (emailResponse) {
-//         return res.status(200).json({ message: 'Referred email sent successfully', emailResponse });
-//       }
-//     } catch (error) {
-//       console.error('Error sending referred email:', error.message, error.stack, {
-//         requestData: req.body,
-//         responseData: error.response?.data,
-//       });
-//       return next(error);
-//     }
-//   });
+router.post('/', async (req, res, next) => {
+    try {
+      const { referrerName, referrerEmail, refereeEmail } = req.body;
+      const emailResponse = await sendRewardEmail(refereeEmail, referrerEmail);
+      if (emailResponse) {
+        return res.status(200).send(emailResponse);
+      }
+    } catch (error) {
+      console.error('Error sending test reward email:', error.message, error.response?.data);
+      return next(error);
+    }
+});
 
 module.exports = router;
