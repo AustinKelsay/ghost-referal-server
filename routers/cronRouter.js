@@ -77,17 +77,17 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.post('/', async (req, res, next) => {
-    try {
-      const { referrerName, referrerEmail, refereeEmail } = req.body;
-      const emailResponse = await sendRewardEmail(refereeEmail, referrerEmail);
-      if (emailResponse) {
-        return res.status(200).send(emailResponse);
-      }
-    } catch (error) {
-      console.error('Error sending test reward email:', error.message, error.response?.data);
-      return next(error);
-    }
-});
+// router.post('/', async (req, res, next) => {
+//     try {
+//       const { referrerName, referrerEmail, refereeEmail } = req.body;
+//       const emailResponse = await sendRewardEmail(refereeEmail, referrerEmail);
+//       if (emailResponse) {
+//         return res.status(200).send(emailResponse);
+//       }
+//     } catch (error) {
+//       console.error('Error sending test reward email:', error.message, error.response?.data);
+//       return next(error);
+//     }
+// });
 
 module.exports = router;
