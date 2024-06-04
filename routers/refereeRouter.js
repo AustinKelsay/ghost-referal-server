@@ -65,7 +65,6 @@ router.post('/', async (req, res, next) => {
             }),
             status: 'draft',
             email_only: true,
-            visibility: 'none',
           },
         ],
       }, {

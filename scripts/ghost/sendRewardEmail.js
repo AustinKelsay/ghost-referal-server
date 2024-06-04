@@ -48,7 +48,6 @@ const sendRewardEmail = async (email, referrerEmail) => {
           }),
           status: 'draft',
           email_only: true,
-          // visibility: 'none',
         },
       ],
     }, {
@@ -117,7 +116,6 @@ const sendRewardEmail = async (email, referrerEmail) => {
             }),
             status: 'draft',
             email_only: true,
-            visibility: 'none',
           },
         ],
       }, {
