@@ -94,7 +94,11 @@ router.post('/', async (req, res, next) => {
         },
       });
 
-      res.status(200).json({ updateReferrerPostResponse });
+      // Extract relevant data from the response
+    const { id, title, status } = updateReferrerPostResponse.data.posts[0];
+
+    // Send the extracted data in the JSON response
+    res.status(200).json({ id, title, status });
 });
 
 module.exports = router;
