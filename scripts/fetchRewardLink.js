@@ -12,8 +12,6 @@ const fetchRewardLink = async () => {
       },
     });
 
-    console.log('Response from fetchRewardLink:', response.data);
-
     if (response.status === 200) {
       return response.data;
     } else {
