@@ -1,7 +1,6 @@
 const express = require('express');
 const referralRouter = require('./routers/referralRouter');
 const cronRouter = require('./routers/cronRouter');
-const refereeRouter = require('./routers/refereeRouter');
 const { errorMiddleware } = require('./middleware/errorMiddleware');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
@@ -36,7 +35,6 @@ app.get('/', (req, res) => {
 
 app.use('/referral', referralRouter);
 app.use('/cron', cronRouter);
-app.use('/referee', refereeRouter);
 
 app.use(errorMiddleware);
 
