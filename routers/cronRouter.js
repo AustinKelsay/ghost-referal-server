@@ -38,7 +38,7 @@ router.get('/', async (req, res, next) => {
             if (response.data?.members && response.data?.members.length > 0) {
                 const member = response.data.members[0];
                 
-                if (member.email_opened_count >= 4) {
+                if (member.email_opened_count >= 4 && member.email === "austnkelsay11@gmail.com") {
                     eligibleReferees.push(referee);
                 }
             }
@@ -53,24 +53,35 @@ router.get('/', async (req, res, next) => {
       return res.status(404).json({ message: 'No eligible referees found' });
     }
 
-    const emailPromises = eligibleReferees.map((referee) => {
-      const refereeRewardResponse = sendRefereeReward(referee.email);
-      // if the referee response was successful and the referrer has less than 1 "successfulReferrals" than send the referrer reward email and increment their successful referrals
-      if (refereeRewardResponse && referee?.referrer.successfulReferrals < 1) {
-        const referrerRewardResponse = sendReferrerReward(referee.referrer.email);
-        return Promise.all([refereeRewardResponse, referrerRewardResponse]);
-      } else {
-        return refereeRewardResponse;
+    const emailPromises = eligibleReferees.map(async (referee) => {
+      try {
+        const refereeRewardResponse = await sendRefereeReward(referee.email);
+
+        if (refereeRewardResponse && referee?.referrer.successfulReferrals < 1) {
+          const referrerRewardResponse = await sendReferrerReward(referee.referrer.email);
+          return { referee: refereeRewardResponse, referrer: referrerRewardResponse };
+        } else {
+          return { referee: refereeRewardResponse, referrer: null };
+        }
+      } catch (error) {
+        console.error('Error sending reward emails:', error);
+        return { referee: false, referrer: false };
       }
-    })
+    });
 
     try {
-      await Promise.all(emailPromises);
-      return res.status(200).json({ message: 'Emails sent successfully' });
+      const results = await Promise.all(emailPromises);
+      const successCount = results.filter((result) => result.referee).length;
+      const failureCount = results.filter((result) => !result.referee).length;
+
+      return res.status(200).json({
+        message: `Successfully sent ${successCount} reward emails, failed to send ${failureCount} emails`,
+      });
     } catch (error) {
-      console.error('Error processing emails or deletions:', error);
+      console.error('Error processing emails:', error);
       return next(error);
     }
+    
   } catch (error) {
     console.error('Error fetching members:', error.message, error.stack, {
       requestData: req.body,

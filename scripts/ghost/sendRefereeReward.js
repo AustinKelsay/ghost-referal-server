@@ -81,11 +81,11 @@ const sendRefereeReward = async (email) => {
         // if the email was sent successfully to the referee check it off in the database
         if (refereeEmailResponse.data.posts[0].status === 'sent') {
             await refereeRewarded(email);
-
             return true;
-        } else {
+          } else {
+            console.error('Failed to send referee reward email:', refereeEmailResponse.data);
             return false;
-        }
+          }
     } catch (error) {
         console.error('Error sending reward email:', error.message, error.response?.data);
         throw new Error('Failed to send reward email');

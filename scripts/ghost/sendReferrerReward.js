@@ -81,11 +81,12 @@ const sendReferrerReward = async (email) => {
 
     // if the email was sent successfully to the referrer increment their successful referrals
     if (updateReferrerPostResponse.data.posts[0].status === 'sent') {
-      await incrementReferrerSuccessfulReferrals(email);
-      return { message: 'Reward emails sent successfully' };
-    } else {
-      return { message: 'Referrer reward email failed to send, but referee reward email sent successfully' };
-    }
+        await incrementReferrerSuccessfulReferrals(email);
+        return true;
+      } else {
+        console.error('Failed to send referrer reward email:', updateReferrerPostResponse.data);
+        return false;
+      }
 
     } catch (error) {
         console.error('Error sending test reward email:', error.message, error.response?.data);
