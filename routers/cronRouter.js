@@ -82,7 +82,7 @@ router.get('/', async (req, res, next) => {
 
       if (refereeSuccessCount === 0 && referrerSuccessCount === 0) {
         return res.status(404).json({
-          message: 'No one was rewarded in this cron job. Keep spreading the word about TFTC!',
+          message: 'No one was eligible for rewards.',
         });
       }
 
