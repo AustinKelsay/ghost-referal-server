@@ -12,7 +12,7 @@ router.get('/', async (req, res, next) => {
   try {
     const token = await createGhostJWT(); // Create a Ghost JWT for authentication
     const referees = await getAllUnrewardedReferees(); // Get all unrewarded referees from the database (these are just referees who have not openned enough emails yet)
-    const referrers = await getAllUnrewardedReferrers(); // Get all unrewarded referrers from the database (these are referrers who have not been rewarded even though their referees have)
+    const elligibleReferrers = await getAllUnrewardedReferrers(); // Get all unrewarded referrers from the database (these are referrers who have not been rewarded even though their referees have)
 
     const eligibleReferees = []; // Array to store eligible referees
 
@@ -47,7 +47,8 @@ router.get('/', async (req, res, next) => {
       }
     }
 
-    console.log('eligibleReferees:', eligibleReferees); // Log the eligible referees
+    console.log('eligibleReferees:', eligibleReferees);
+    console.log('elligibleReferrers:', elligibleReferrers);
 
     // Create email promises for eligible referees
     const refereeEmailPromises = eligibleReferees.map(async (referee) => {
@@ -61,7 +62,7 @@ router.get('/', async (req, res, next) => {
     });
 
     // Create email promises for referrers
-    const referrerEmailPromises = referrers.map(async (referrer) => {
+    const referrerEmailPromises = elligibleReferrers.map(async (referrer) => {
       try {
         const referrerRewardResponse = await sendReferrerReward(referrer.email); // Send the reward email to the referrer
         return { referrer: referrerRewardResponse };
