@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const axios = require('axios');
 const { createGhostJWT } = require('../utils/jwt');
-const { getAllUnrewardedReferees } = require('../db/methods/referralMethods');
+const { getAllUnrewardedReferees, getRefereeRewardStatus, getReferrerRewardStatus, getAllUnrewardedReferrers } = require('../db/methods/referralMethods');
 const { sendReferredEmail } = require('../scripts/ghost/sendReferredEmail');
 const { sendRefereeReward } = require('../scripts/ghost/sendRefereeReward');
 const { sendReferrerReward } = require('../scripts/ghost/sendReferrerReward');
@@ -10,23 +10,20 @@ const GHOST_API = process.env.GHOST_API;
 
 router.get('/', async (req, res, next) => {
   try {
-    const token = await createGhostJWT();
-    const referees = await getAllUnrewardedReferees();
+    const token = await createGhostJWT(); // Create a Ghost JWT for authentication
+    const referees = await getAllUnrewardedReferees(); // Get all unrewarded referees from the database (these are just referees who have not openned enough emails yet)
+    const referrers = await getAllUnrewardedReferrers(); // Get all unrewarded referrers from the database (these are referrers who have not been rewarded even though their referees have)
 
-    if (!referees || referees?.length === 0) {
-      return res.status(404).json({ message: 'No elligible referees found' });
-    }
-
-    const eligibleReferees = [];
+    const eligibleReferees = []; // Array to store eligible referees
 
     for (const referee of referees) {
       try {
-        // Quick fix for error uriEncoding email with a + in it
         let email = referee.email;
         if (email.includes('+')) {
-          email = email.replace(/\+/g, '%2B');
+          email = email.replace(/\+/g, '%2B'); // Quick fix for error uriEncoding email with a '+' in it
         }
 
+        // Fetch the member data from the Ghost API
         const response = await axios.get(`${GHOST_API}/members/?filter=email:'${encodeURIComponent(email)}'`, {
           headers: {
             'Authorization': `Ghost ${token}`,
@@ -38,8 +35,11 @@ router.get('/', async (req, res, next) => {
         if (response.data?.members && response.data?.members.length > 0) {
           const member = response.data.members[0];
 
-          if (member.email_opened_count >= 4) {
-            eligibleReferees.push(referee);
+          if (member.email_opened_count >= 4) { // Check if the referee has opened at least 4 emails
+            const refereeRewardStatus = await getRefereeRewardStatus(referee.email); // Get the reward status of the referee
+            if (!refereeRewardStatus.rewarded) { // Check if the referee has not been rewarded yet
+              eligibleReferees.push(referee); // Add the referee to the eligible referees array
+            }
           }
         }
       } catch (error) {
@@ -47,37 +47,42 @@ router.get('/', async (req, res, next) => {
       }
     }
 
-    console.log('eligibleReferees:', eligibleReferees);
+    console.log('eligibleReferees:', eligibleReferees); // Log the eligible referees
 
-    if (eligibleReferees.length === 0) {
-      return res.status(404).json({ message: 'No eligible referees found' });
-    }
-
-    const emailPromises = eligibleReferees.map(async (referee) => {
+    // Create email promises for eligible referees
+    const refereeEmailPromises = eligibleReferees.map(async (referee) => {
       try {
-        const refereeRewardResponse = await sendRefereeReward(referee.email);
-
-        if (refereeRewardResponse && referee?.referrer.successfulReferrals < 1) {
-          const referrerRewardResponse = await sendReferrerReward(referee.referrer.email);
-          return { referee: refereeRewardResponse, referrer: referrerRewardResponse };
-        } else {
-          return { referee: refereeRewardResponse, referrer: null };
-        }
+        const refereeRewardResponse = await sendRefereeReward(referee.email); // Send the reward email to the referee
+        return { referee: refereeRewardResponse };
       } catch (error) {
-        console.error('Error sending reward emails:', error);
-        return { referee: false, referrer: false };
+        console.error('Error sending referee reward email:', error);
+        return { referee: false };
+      }
+    });
+
+    // Create email promises for referrers
+    const referrerEmailPromises = referrers.map(async (referrer) => {
+      try {
+        const referrerRewardResponse = await sendReferrerReward(referrer.email); // Send the reward email to the referrer
+        return { referrer: referrerRewardResponse };
+      } catch (error) {
+        console.error('Error sending referrer reward email:', error);
+        return { referrer: false };
       }
     });
 
     try {
-      const results = await Promise.all(emailPromises);
-      const refereeSuccessCount = results.filter((result) => result.referee).length;
-      const refereeFailureCount = results.filter((result) => !result.referee).length;
-      const referrerSuccessCount = results.filter((result) => result.referrer).length;
-      const referrerFailureCount = results.filter((result) => result.referee && !result.referrer).length;
+      const refereeResults = await Promise.all(refereeEmailPromises); // Wait for all referee email promises to resolve
+      const refereeSuccessCount = refereeResults.filter((result) => result.referee).length; // Count successful referee emails
+      const refereeFailureCount = refereeResults.filter((result) => !result.referee).length; // Count failed referee emails
 
+      const referrerResults = await Promise.all(referrerEmailPromises); // Wait for all referrer email promises to resolve
+      const referrerSuccessCount = referrerResults.filter((result) => result.referrer).length; // Count successful referrer emails
+      const referrerFailureCount = referrerResults.filter((result) => !result.referrer).length; // Count failed referrer emails
+
+      // Send the response with the counts of successful and failed emails
       return res.status(200).json({
-        message: `Successfully sent ${refereeSuccessCount + referrerSuccessCount} reward emails (${refereeSuccessCount} to referees, ${referrerSuccessCount} to referrers), failed to send ${refereeFailureCount + referrerFailureCount} emails (${refereeFailureCount} to referees, ${referrerFailureCount} to referrers)`,
+        message: `Successfully sent ${refereeSuccessCount} reward emails to referees, failed to send ${refereeFailureCount} emails to referees. Successfully sent ${referrerSuccessCount} reward emails to referrers, failed to send ${referrerFailureCount} emails to referrers.`,
       });
     } catch (error) {
       console.error('Error processing emails:', error);

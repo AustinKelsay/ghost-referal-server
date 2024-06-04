@@ -121,15 +121,34 @@ const getAllReferees = async () => {
     }
   };
 
+  const getAllUnrewardedReferrers = async () => {
+    // where successfulReferrals is 0 and where at least one referee has been rewarded
+    try {
+      const unrewardedReferrers = await prisma.referrer.findMany({
+        where: {
+          successfulReferrals: 0,
+          referees: {
+            some: {
+              rewarded: true,
+            },
+          },
+        },
+      });
+      return unrewardedReferrers;
+    } catch (error) {
+      console.error('Error fetching unrewarded referrers:', error);
+      throw error; // Re-throw the error to be caught in the route handler
+    }
+  };
+
   const refereeRewarded = async (refereeEmail) => {
-    console.log('called');
     try {
       const referee = await prisma.referee.update({
         where: {
           email: refereeEmail,
         },
         data: {
-          rewarded: true, // Specify the fields to update here
+          rewarded: true,
         },
         select: {
           rewarded: true,
@@ -139,15 +158,13 @@ const getAllReferees = async () => {
       if (!referee) {
         return { error: 'Referee not found' };
       }
-
-      console.log('referee', referee);
   
       return { rewarded: referee.rewarded };
     } catch (error) {
-      console.error('Error checking referee rewarded status:', error);
-      throw error; // Re-throw the error to be caught in the route handler
+      console.error('Error updating referee rewarded status:', error);
+      throw error;
     }
-};
+  };
 
   const deleteReferee = async (refereeEmail) => {
     try {
@@ -186,5 +203,59 @@ const getAllReferees = async () => {
     }
 };
 
+const getRefereeRewardStatus = async (refereeEmail) => {
+  try {
+    const referee = await prisma.referee.findUnique({
+      where: {
+        email: refereeEmail,
+      },
+      select: {
+        rewarded: true,
+      },
+    });
 
-module.exports = { createReferral, getAllReferees, deleteReferee, getAllUnrewardedReferees, refereeRewarded, incrementReferrerSuccessfulReferrals };
+    if (!referee) {
+      return { error: 'Referee not found' };
+    }
+
+    return { rewarded: referee.rewarded };
+  } catch (error) {
+    console.error('Error fetching referee reward status:', error);
+    throw error;
+  }
+};
+
+const getReferrerRewardStatus = async (referrerEmail, refereeEmail) => {
+  try {
+    const referrer = await prisma.referrer.findUnique({
+      where: {
+        email: referrerEmail,
+      },
+      include: {
+        referees: {
+          where: {
+            email: refereeEmail,
+          },
+        },
+      },
+    });
+
+    if (!referrer) {
+      return { error: 'Referrer not found' };
+    }
+
+    const referee = referrer.referees[0];
+
+    if (!referee) {
+      return { error: 'Referee not found for the referrer' };
+    }
+
+    return { rewarded: referee.rewarded };
+  } catch (error) {
+    console.error('Error fetching referrer reward status:', error);
+    throw error;
+  }
+};
+
+
+module.exports = { createReferral, getAllReferees, deleteReferee, getAllUnrewardedReferees, refereeRewarded, incrementReferrerSuccessfulReferrals, getRefereeRewardStatus, getReferrerRewardStatus, getAllUnrewardedReferrers };
