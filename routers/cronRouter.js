@@ -3,8 +3,8 @@ const axios = require('axios');
 const { createGhostJWT } = require('../utils/jwt');
 const { getAllUnrewardedReferees } = require('../db/methods/referralMethods');
 const { sendReferredEmail } = require('../scripts/ghost/sendReferredEmail');
-const {sendRefereeReward} = require('../scripts/ghost/sendRefereeReward');
-const {sendReferrerReward} = require('../scripts/ghost/sendReferrerReward');
+const { sendRefereeReward } = require('../scripts/ghost/sendRefereeReward');
+const { sendReferrerReward } = require('../scripts/ghost/sendReferrerReward');
 
 const GHOST_API = process.env.GHOST_API;
 
@@ -20,31 +20,31 @@ router.get('/', async (req, res, next) => {
     const eligibleReferees = [];
 
     for (const referee of referees) {
-        try {
-          // Quick fix for error uriEncoding email with a + in it
-            let email = referee.email;
-            if (email.includes('+')) {
-                email = email.replace(/\+/g, '%2B');
-            }
-
-            const response = await axios.get(`${GHOST_API}/members/?filter=email:'${encodeURIComponent(email)}'`, {
-                headers: {
-                    'Authorization': `Ghost ${token}`,
-                    'Content-Type': 'application/json',
-                    'Accept-Version': 'v5.82'
-                }
-            });
-            
-            if (response.data?.members && response.data?.members.length > 0) {
-                const member = response.data.members[0];
-                
-                if (member.email_opened_count >= 0 && member.email === "austinkelsay11@gmail.com") {
-                    eligibleReferees.push(referee);
-                }
-            }
-        } catch (error) {
-            console.warn('Error fetching member:', referee.email, error.message, error.response?.data);
+      try {
+        // Quick fix for error uriEncoding email with a + in it
+        let email = referee.email;
+        if (email.includes('+')) {
+          email = email.replace(/\+/g, '%2B');
         }
+
+        const response = await axios.get(`${GHOST_API}/members/?filter=email:'${encodeURIComponent(email)}'`, {
+          headers: {
+            'Authorization': `Ghost ${token}`,
+            'Content-Type': 'application/json',
+            'Accept-Version': 'v5.82'
+          }
+        });
+
+        if (response.data?.members && response.data?.members.length > 0) {
+          const member = response.data.members[0];
+
+          if (member.email_opened_count >= 4) {
+            eligibleReferees.push(referee);
+          }
+        }
+      } catch (error) {
+        console.warn('Error fetching member:', referee.email, error.message, error.response?.data);
+      }
     }
 
     console.log('eligibleReferees:', eligibleReferees);
@@ -71,11 +71,13 @@ router.get('/', async (req, res, next) => {
 
     try {
       const results = await Promise.all(emailPromises);
-      const successCount = results.filter((result) => result.referee).length;
-      const failureCount = results.filter((result) => !result.referee).length;
+      const refereeSuccessCount = results.filter((result) => result.referee).length;
+      const refereeFailureCount = results.filter((result) => !result.referee).length;
+      const referrerSuccessCount = results.filter((result) => result.referrer).length;
+      const referrerFailureCount = results.filter((result) => result.referee && !result.referrer).length;
 
       return res.status(200).json({
-        message: `Successfully sent ${successCount} reward emails, failed to send ${failureCount} emails`,
+        message: `Successfully sent ${refereeSuccessCount + referrerSuccessCount} reward emails (${refereeSuccessCount} to referees, ${referrerSuccessCount} to referrers), failed to send ${refereeFailureCount + referrerFailureCount} emails (${refereeFailureCount} to referees, ${referrerFailureCount} to referrers)`,
       });
     } catch (error) {
       console.error('Error processing emails:', error);
