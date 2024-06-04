@@ -48,7 +48,7 @@ router.get('/', async (req, res, next) => {
 
     console.log('eligibleReferees:', eligibleReferees);
 
-    if (eligibleReferees.length === 0) {
+    if (eligibleReferees.length === 0 || true) {
       return res.status(404).json({ message: 'No eligible referees found' });
     }
 
