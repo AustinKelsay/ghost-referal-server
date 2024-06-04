@@ -29,8 +29,7 @@ router.post('/', async (req, res, next) => {
     const newsletterSlug = await getNewsletterSlug();
     const token = await createGhostJWT();
 
-      // Create a draft post for the referrer email
-      const createReferrerPostResponse = await axios.post(`${GHOST_API}/posts/`, {
+    const createPostResponse = await axios.post(`${GHOST_API}/posts/`, {
         posts: [
           {
             title: "Congrats! You've Unlocked A TFTC Reward - Claim Here",
@@ -44,7 +43,7 @@ router.post('/', async (req, res, next) => {
                         "format": 0,
                         "mode": "normal",
                         "style": "",
-                        "text": `Since your friend opened three newsletters after you referred them, you are receiving a bitcoin reward as a token of our appreciation. Thank you for helping us grow the TFTC community!\n\nClick the link below to claim your reward. This reward can be claimed using a bitcoin wallet that has the Lightning Network enabled. If you don't have a Lightning Network enabled wallet already there are some suggestions on the \"Redeem\" page.\n\nThis is only the beginning for the TFTC rewards program. We will be adding more ways to earn rewards while interacting with our content and helping us expand our community in the near future. Stay tuned!\n\nClaim your reward here: ${referrerLink}`,
+                        "text": `Since you opened three newsletters after being referred by a friend within the TFTC community you are receiving a bitcoin reward as a token of our appreciation. Thank you for taking time out of your day to read our content.\n\nClick the link button below to claim your reward. This reward can be claimed using a bitcoin wallet that has the Lightning Network enabled. If you don't have a Lightning Network enabled wallet already there are some suggestions on the \"Redeem\" page.\n\nUnlock more rewards by inviting a friend who you think will get value out of our content. https://tftc-referral-form.vercel.app/ \n\nClaim your reward here: ${referrerLink}`,
                         "type": "extended-text",
                         "version": 1
                       }
@@ -74,16 +73,16 @@ router.post('/', async (req, res, next) => {
           'Accept-Version': 'v5.82',
         },
       });
-
-      const referrerPostId = createReferrerPostResponse.data.posts[0].id;
-      const referrerUpdatedAt = createReferrerPostResponse.data.posts[0].updated_at;
-
-      // Publish the referrer post to trigger email sending
-      const updateReferrerPostResponse = await axios.put(`${GHOST_API}/posts/${referrerPostId}/?newsletter=${newsletterSlug}&email_segment=email:'${referrerEmail}'`, {
+  
+      const postId = createPostResponse.data.posts[0].id;
+      const updatedAt = createPostResponse.data.posts[0].updated_at;
+  
+      // Publish the post to trigger email sending
+      const refereeEmailResponse = await axios.put(`${GHOST_API}/posts/${postId}/?newsletter=${newsletterSlug}&email_segment=email:'${referrerEmail}'`, {
         posts: [
           {
             status: 'published',
-            updated_at: referrerUpdatedAt,
+            updated_at: updatedAt,
           },
         ],
       }, {
@@ -95,7 +94,7 @@ router.post('/', async (req, res, next) => {
       });
 
       // Extract relevant data from the response
-    const { id, title, status } = updateReferrerPostResponse.data.posts[0];
+    const { id, title, status } = refereeEmailResponse.data.posts[0];
 
     // Send the extracted data in the JSON response
     res.status(200).json({ id, title, status });
