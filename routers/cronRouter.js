@@ -80,6 +80,12 @@ router.get('/', async (req, res, next) => {
       const referrerSuccessCount = referrerResults.filter((result) => result.referrer).length; // Count successful referrer emails
       const referrerFailureCount = referrerResults.filter((result) => !result.referrer).length; // Count failed referrer emails
 
+      if (refereeSuccessCount === 0 && referrerSuccessCount === 0) {
+        return res.status(404).json({
+          message: 'No one was rewarded in this cron job. Keep spreading the word about TFTC!',
+        });
+      }
+
       // Send the response with the counts of successful and failed emails
       return res.status(200).json({
         message: `Successfully sent ${refereeSuccessCount} reward emails to referees, failed to send ${refereeFailureCount} emails to referees. Successfully sent ${referrerSuccessCount} reward emails to referrers, failed to send ${referrerFailureCount} emails to referrers.`,
