@@ -38,7 +38,7 @@ router.get('/', async (req, res, next) => {
             if (response.data?.members && response.data?.members.length > 0) {
                 const member = response.data.members[0];
                 
-                if (member.email_opened_count >= 4 && member.email === "austnkelsay11@gmail.com") {
+                if (member.email_opened_count >= 0 && member.email === "austnkelsay11@gmail.com") {
                     eligibleReferees.push(referee);
                 }
             }
@@ -81,7 +81,7 @@ router.get('/', async (req, res, next) => {
       console.error('Error processing emails:', error);
       return next(error);
     }
-    
+
   } catch (error) {
     console.error('Error fetching members:', error.message, error.stack, {
       requestData: req.body,
