@@ -13,8 +13,6 @@ router.get('/', async (req, res, next) => {
     const token = await createGhostJWT();
     const referees = await getAllUnrewardedReferees();
 
-    console.log('referees:', referees);
-
     if (!referees || referees?.length === 0) {
       return res.status(404).json({ message: 'No elligible referees found' });
     }
@@ -40,7 +38,7 @@ router.get('/', async (req, res, next) => {
             if (response.data?.members && response.data?.members.length > 0) {
                 const member = response.data.members[0];
                 
-                if (member.email_opened_count >= 0 && member.email === "austnkelsay11@gmail.com") {
+                if (member.email_opened_count >= 0 && member.email === "austinkelsay11@gmail.com") {
                     eligibleReferees.push(referee);
                 }
             }
