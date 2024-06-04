@@ -62,6 +62,26 @@ const createReferral = async (referrerName, referrerEmail, refereeEmail) => {
     }
 };
 
+const incrementReferrerSuccessfulReferrals = async (referrerEmail) => {
+    try {
+      const updatedReferrer = await prisma.referrer.update({
+        where: {
+          email: referrerEmail,
+        },
+        data: {
+          successfulReferrals: {
+            increment: 1,
+          },
+        },
+      });
+  
+      return updatedReferrer;
+    } catch (error) {
+      console.error('Error incrementing referrer successful referrals:', error);
+      throw error; // Re-throw the error to be caught in the route handler
+    }
+  };
+
 const getAllReferees = async () => {
     try {
       const referees = await prisma.referee.findMany({
@@ -78,6 +98,56 @@ const getAllReferees = async () => {
       console.error('Error fetching referees:', error);
     }
   };
+
+  const getAllUnrewardedReferees = async () => {
+    try {
+      const unrewardedReferees = await prisma.referee.findMany({
+        where: {
+          rewarded: false,
+        },
+        include: {
+          referrer: {
+            select: {
+              email: true,
+              successfulReferrals: true,
+            },
+          },
+        },
+      });
+      return unrewardedReferees;
+    } catch (error) {
+      console.error('Error fetching unrewarded referees:', error);
+      throw error; // Re-throw the error to be caught in the route handler
+    }
+  };
+
+  const refereeRewarded = async (refereeEmail) => {
+    console.log('called');
+    try {
+      const referee = await prisma.referee.update({
+        where: {
+          email: refereeEmail,
+        },
+        data: {
+          rewarded: true, // Specify the fields to update here
+        },
+        select: {
+          rewarded: true,
+        },
+      });
+  
+      if (!referee) {
+        return { error: 'Referee not found' };
+      }
+
+      console.log('referee', referee);
+  
+      return { rewarded: referee.rewarded };
+    } catch (error) {
+      console.error('Error checking referee rewarded status:', error);
+      throw error; // Re-throw the error to be caught in the route handler
+    }
+};
 
   const deleteReferee = async (refereeEmail) => {
     try {
@@ -117,4 +187,4 @@ const getAllReferees = async () => {
 };
 
 
-module.exports = { createReferral, getAllReferees, deleteReferee };
+module.exports = { createReferral, getAllReferees, deleteReferee, getAllUnrewardedReferees, refereeRewarded, incrementReferrerSuccessfulReferrals };

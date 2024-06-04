@@ -1,19 +1,20 @@
 const router = require("express").Router();
 const axios = require('axios');
 const { createGhostJWT } = require('../utils/jwt');
-const { getAllReferees, deleteReferee } = require('../db/methods/referralMethods');
-const { sendRewardEmail } = require('../scripts/ghost/sendRewardEmail');
+const { getAllUnrewardedReferees } = require('../db/methods/referralMethods');
 const { sendReferredEmail } = require('../scripts/ghost/sendReferredEmail');
+const {sendRefereeReward} = require('../scripts/ghost/sendRefereeReward');
+const {sendReferrerReward} = require('../scripts/ghost/sendReferrerReward');
 
 const GHOST_API = process.env.GHOST_API;
 
 router.get('/', async (req, res, next) => {
   try {
     const token = await createGhostJWT();
-    const referees = await getAllReferees();
+    const referees = await getAllUnrewardedReferees();
 
     if (!referees || referees?.length === 0) {
-      return res.status(404).json({ message: 'No referees found' });
+      return res.status(404).json({ message: 'No elligible referees found' });
     }
 
     const eligibleReferees = [];
@@ -37,7 +38,7 @@ router.get('/', async (req, res, next) => {
             if (response.data?.members && response.data?.members.length > 0) {
                 const member = response.data.members[0];
                 
-                if (member.email_opened_count >= 4) {
+                if (member.email_opened_count >= 0 && member.email === "austinkelsay11@gmail.com") {
                     eligibleReferees.push(referee);
                 }
             }
@@ -48,22 +49,24 @@ router.get('/', async (req, res, next) => {
 
     console.log('eligibleReferees:', eligibleReferees);
 
-    if (eligibleReferees.length === 0 || true) {
+    if (eligibleReferees.length === 0) {
       return res.status(404).json({ message: 'No eligible referees found' });
     }
 
-    const emailPromises = eligibleReferees.map(referee =>
-      sendRewardEmail(referee.email, referee.referrer.email)
-        .then(() => deleteReferee(referee.email))
-        .catch(error => {
-          console.error('Error sending email or deleting referee:', referee.email, error);
-          throw new Error(`Failed to send email or delete referee: ${referee.email}`);
-        })
-    );
+    const emailPromises = eligibleReferees.map((referee) => {
+      const refereeRewardResponse = sendRefereeReward(referee.email);
+      // if the referee response was successful and the referrer has less than 1 "successfulReferrals" than send the referrer reward email and increment their successful referrals
+      if (refereeRewardResponse && referee?.referrer.successfulReferrals < 1) {
+        const referrerRewardResponse = sendReferrerReward(referee.referrer.email);
+        return Promise.all([refereeRewardResponse, referrerRewardResponse]);
+      } else {
+        return refereeRewardResponse;
+      }
+    })
 
     try {
       await Promise.all(emailPromises);
-      return res.status(200).json({ message: 'Emails sent and referees deleted successfully', referees: eligibleReferees });
+      return res.status(200).json({ message: 'Emails sent successfully' });
     } catch (error) {
       console.error('Error processing emails or deletions:', error);
       return next(error);

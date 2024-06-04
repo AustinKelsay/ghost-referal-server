@@ -5,7 +5,7 @@
 
 datasource db {
   provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  url      = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
@@ -14,21 +14,17 @@ generator client {
 }
 
 model Referrer {
-  id       Int       @id @default(autoincrement())
-  name     String
-  email    String    @unique
-  referees Referee[] // This sets up a one-to-many relationship
+  id                 Int       @id @default(autoincrement())
+  name               String
+  email              String    @unique
+  referees           Referee[] // This sets up a one-to-many relationship
+  successfulReferrals Int      @default(0)
 }
 
 model Referee {
-  id         Int       @id @default(autoincrement())
-  email      String    @unique
-  referrerId Int       // Foreign key
-  referrer   Referrer  @relation(fields: [referrerId], references: [id])
-}
-
-model ClientToken {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  referrerId Int      // Foreign key
+  referrer   Referrer @relation(fields: [referrerId], references: [id])
+  rewarded   Boolean  @default(false)
 }
