@@ -13,6 +13,8 @@ router.get('/', async (req, res, next) => {
     const token = await createGhostJWT();
     const referees = await getAllUnrewardedReferees();
 
+    console.log('referees:', referees);
+
     if (!referees || referees?.length === 0) {
       return res.status(404).json({ message: 'No elligible referees found' });
     }
