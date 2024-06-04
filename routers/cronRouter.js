@@ -38,7 +38,7 @@ router.get('/', async (req, res, next) => {
             if (response.data?.members && response.data?.members.length > 0) {
                 const member = response.data.members[0];
                 
-                if (member.email_opened_count >= 0 && member.email === "austinkelsay11@gmail.com") {
+                if (member.email_opened_count >= 4) {
                     eligibleReferees.push(referee);
                 }
             }
