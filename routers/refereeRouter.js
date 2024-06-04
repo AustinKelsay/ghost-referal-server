@@ -5,6 +5,8 @@ const { getNewsletterSlug } = require('../scripts/ghost/getNewsletterSlug');
 const { createGhostJWT } = require('../utils/jwt');
 const axios = require('axios');
 
+const GHOST_API = process.env.GHOST_API;
+
 // simply get all the referees and return them
 router.get('/', async (req, res, next) => {
   try {
