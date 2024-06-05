@@ -113,6 +113,7 @@ const getAllReferees = async () => {
             },
           },
         },
+        timeout: 30000, // Increase the timeout to 30 seconds (30000 milliseconds)
       });
       return unrewardedReferees;
     } catch (error) {
