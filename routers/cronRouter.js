@@ -36,10 +36,7 @@ router.get('/', async (req, res, next) => {
           const member = response.data.members[0];
 
           if (member.email_opened_count >= 4) { // Check if the referee has opened at least 4 emails
-            const refereeRewardStatus = await getRefereeRewardStatus(referee.email); // Get the reward status of the referee
-            if (!refereeRewardStatus.rewarded) { // Check if the referee has not been rewarded yet
-              eligibleReferees.push(referee); // Add the referee to the eligible referees array
-            }
+            eligibleReferees.push(referee); // Add the referee to the eligible referees array
           }
         }
       } catch (error) {

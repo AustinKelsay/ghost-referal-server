@@ -82,37 +82,12 @@ const incrementReferrerSuccessfulReferrals = async (referrerEmail) => {
     }
   };
 
-const getAllReferees = async () => {
-    try {
-      const referees = await prisma.referee.findMany({
-        include: {
-          referrer: {
-            select: {
-              email: true,
-            },
-          },
-        },
-      });
-      return referees;
-    } catch (error) {
-      console.error('Error fetching referees:', error);
-    }
-  };
-
   const getAllUnrewardedReferees = async () => {
     try {
       const unrewardedReferees = await prisma.referee.findMany({
         where: {
           rewarded: false,
-        },
-        include: {
-          referrer: {
-            select: {
-              email: true,
-              successfulReferrals: true,
-            },
-          },
-        },
+        }
       });
       return unrewardedReferees;
     } catch (error) {
@@ -140,68 +115,6 @@ const getAllReferees = async () => {
       throw error; // Re-throw the error to be caught in the route handler
     }
   };
-
-  const refereeRewarded = async (refereeEmail) => {
-    try {
-      const referee = await prisma.referee.update({
-        where: {
-          email: refereeEmail,
-        },
-        data: {
-          rewarded: true,
-        },
-        select: {
-          rewarded: true,
-        },
-      });
-  
-      if (!referee) {
-        return { error: 'Referee not found' };
-      }
-  
-      return { rewarded: referee.rewarded };
-    } catch (error) {
-      console.error('Error updating referee rewarded status:', error);
-      throw error;
-    }
-  };
-
-  const deleteReferee = async (refereeEmail) => {
-    try {
-        // Find the referee to get the referrer ID before deletion
-        const referee = await prisma.referee.findUnique({
-            where: {
-                email: refereeEmail
-            }
-        });
-
-        if (!referee) {
-            return { error: 'Referee not found' };
-        }
-
-        // Delete the referee
-        await prisma.referee.delete({
-            where: {
-                email: refereeEmail
-            }
-        });
-
-        // Optionally, fetch and return the updated list of referees for the referrer to confirm deletion
-        const updatedReferrer = await prisma.referrer.findUnique({
-            where: {
-                id: referee.referrerId
-            },
-            include: {
-                referees: true
-            }
-        });
-
-        return updatedReferrer;
-    } catch (error) {
-        console.error('Error deleting referee:', error);
-        throw error; // Re-throw the error to be caught in the route handler
-    }
-};
 
 const getRefereeRewardStatus = async (refereeEmail) => {
   try {
@@ -257,5 +170,30 @@ const getReferrerRewardStatus = async (referrerEmail, refereeEmail) => {
   }
 };
 
+const refereeRewarded = async (refereeEmail) => {
+  try {
+    const referee = await prisma.referee.update({
+      where: {
+        email: refereeEmail,
+      },
+      data: {
+        rewarded: true,
+      },
+      select: {
+        rewarded: true,
+      },
+    });
 
-module.exports = { createReferral, getAllReferees, deleteReferee, getAllUnrewardedReferees, refereeRewarded, incrementReferrerSuccessfulReferrals, getRefereeRewardStatus, getReferrerRewardStatus, getAllUnrewardedReferrers };
+    if (!referee) {
+      return { error: 'Referee not found' };
+    }
+
+    return { rewarded: referee.rewarded };
+  } catch (error) {
+    console.error('Error updating referee rewarded status:', error);
+    throw error;
+  }
+};
+
+
+module.exports = { createReferral, getAllUnrewardedReferees, incrementReferrerSuccessfulReferrals, getRefereeRewardStatus, getReferrerRewardStatus, getAllUnrewardedReferrers, refereeRewarded };
