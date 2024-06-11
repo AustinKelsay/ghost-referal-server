@@ -35,9 +35,9 @@ router.get('/', async (req, res, next) => {
         if (response.data?.members && response.data?.members.length > 0) {
           const member = response.data.members[0];
 
-          if (member.email_opened_count >= 4) { // Check if the referee has opened at least 4 emails
-            eligibleReferees.push(referee); // Add the referee to the eligible referees array
-          }
+          // if (member.email_opened_count >= 4) { // Check if the referee has opened at least 4 emails
+          //   eligibleReferees.push(referee); // Add the referee to the eligible referees array
+          // }
         }
       } catch (error) {
         console.warn('Error fetching member:', referee.email, error.message, error.response?.data);
