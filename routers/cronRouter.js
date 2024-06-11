@@ -50,8 +50,8 @@ router.get('/', async (req, res, next) => {
     // Create email promises for eligible referees
     const refereeEmailPromises = eligibleReferees.map(async (referee) => {
       try {
-        const refereeRewardResponse = await sendRefereeReward(referee.email); // Send the reward email to the referee
-        return { referee: refereeRewardResponse };
+        // const refereeRewardResponse = await sendRefereeReward(referee.email); // Send the reward email to the referee
+        // return { referee: refereeRewardResponse };
       } catch (error) {
         console.error('Error sending referee reward email:', error);
         return { referee: false };
@@ -61,8 +61,8 @@ router.get('/', async (req, res, next) => {
     // Create email promises for referrers
     const referrerEmailPromises = elligibleReferrers.map(async (referrer) => {
       try {
-        const referrerRewardResponse = await sendReferrerReward(referrer.email); // Send the reward email to the referrer
-        return { referrer: referrerRewardResponse };
+        // const referrerRewardResponse = await sendReferrerReward(referrer.email); // Send the reward email to the referrer
+        // return { referrer: referrerRewardResponse };
       } catch (error) {
         console.error('Error sending referrer reward email:', error);
         return { referrer: false };
