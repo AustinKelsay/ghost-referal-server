@@ -52,6 +52,7 @@ router.get('/', async (req, res, next) => {
       try {
         // const refereeRewardResponse = await sendRefereeReward(referee.email); // Send the reward email to the referee
         // return { referee: refereeRewardResponse };
+        return;
       } catch (error) {
         console.error('Error sending referee reward email:', error);
         return { referee: false };
@@ -63,6 +64,7 @@ router.get('/', async (req, res, next) => {
       try {
         // const referrerRewardResponse = await sendReferrerReward(referrer.email); // Send the reward email to the referrer
         // return { referrer: referrerRewardResponse };
+        return;
       } catch (error) {
         console.error('Error sending referrer reward email:', error);
         return { referrer: false };
