@@ -13,7 +13,7 @@ const fetchRewardLink = async () => {
     });
 
     if (response.status === 200) {
-      return response.data;
+      return response.data.newLink;
     } else {
       throw new Error(`Unexpected status code: ${response.status}`);
     }
