@@ -5,7 +5,9 @@ const { createGhostJWT } = require('../utils/jwt');
 const { createReferral } = require('../db/methods/referralMethods');
 const { fetchMemberByEmail } = require('../scripts/ghost/fetchMemberByEmail');
 const {sendReferredEmail} = require('../scripts/ghost/sendReferredEmail');
+
 const GHOST_API = process.env.GHOST_API;
+
 const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY;
 
 router.post('/', async (req, res, next) => {
